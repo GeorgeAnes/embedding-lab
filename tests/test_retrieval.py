@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 
+from lab.evaluate import summarize
 from lab.lexical import Index
 from lab.vecops import mean_pairwise_cosine, ranks, rrf, to_int8, truncate
 from . import auditor_reference as ref
@@ -58,3 +59,12 @@ def test_vector_operations():
     assert np.abs(to_int8(Z) - Z).max() <= np.abs(Z).max() / 127 / 2 + 1e-12
     same = np.tile(Z[:1], (5, 1))
     assert abs(mean_pairwise_cosine(same) - 1) < 1e-12
+
+
+def test_summarize_metrics_and_paired_difference():
+    best = {"a": np.array([1, 2, 20, 5]), "b": np.array([1, 2, 20, 5]), "c": np.array([3, 3, 3, 3])}
+    out = summarize(best, np.array([0, 0, 1, 1]), "a", {"all": np.ones(4, bool)}, B=200)
+    assert out["a"]["all"]["r10"][0] == 0.75
+    assert abs(out["a"]["all"]["mrr"][0] - (1 + 0.5 + 0 + 0.2) / 4) < 1e-12
+    assert out["b"]["all"]["d_r10"] == [0.0, 0.0, 0.0]
+    assert out["c"]["all"]["r10"][0] == 1.0 and out["c"]["all"]["d_r10"][0] == 0.25
