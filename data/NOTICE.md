@@ -1,8 +1,8 @@
 # Notice for data/corpus.jsonl
 
-`corpus.jsonl` is derived from the public docstrings of NumPy 2.4.6 and SciPy 1.17.1, extracted with Python 3.11.15 on 30 September 2026 by `python -m lab corpus` (`lab/corpus.py`). Each record holds the docstring's first paragraph (`summary`) and the docstring text with Examples sections removed (`full`). Whitespace is collapsed. The text is otherwise unchanged.
+`corpus.jsonl` is derived from the public docstrings of NumPy 2.4.6 and SciPy 1.17.1, extracted with Python 3.11.15 on 30 September 2026 by `python -m lab corpus` (`lab/corpus.py`). Each record holds the docstring's first paragraph (`summary`) and the docstring text with Examples sections removed (`full`). A leading signature line (ufuncs) is skipped and whitespace is collapsed. The text is otherwise unchanged.
 
-Both projects are distributed under the BSD 3-Clause license. Their copyright notices and license texts follow, as the license requires for redistribution.
+Both projects are distributed under the BSD 3-Clause license. Their copyright notices and license texts follow, as the license requires for redistribution. The docstring text in `corpus.jsonl` stays under these terms; the all-rights-reserved terms in the repository's `LICENSE` file do not apply to it.
 
 ## NumPy
 
