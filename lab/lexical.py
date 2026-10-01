@@ -69,7 +69,7 @@ class Index:
     def _lsa_basis(self, k):
         if k not in self._lsa:
             A, _ = self._tfidf_docs()
-            # ponytail: assumes the collection has more than k independent documents (true for both collections here)
+            # assumes the collection has more than k independent documents (true for both collections here)
             vals, U = np.linalg.eigh((A @ A.T).toarray())  # A = U S Vt, so A A^T = U S^2 U^T
             vals, U = vals[::-1][:k], U[:, ::-1][:, :k]
             Vk = A.T @ (U / np.sqrt(np.maximum(vals, 1e-12)))  # the k word-space directions

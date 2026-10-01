@@ -141,10 +141,13 @@ def write_all(res, vectors):
     (ROOT / "results" / "results.json").write_text(json.dumps(res, indent=1), encoding="utf8")
     text = tables(res)
     (ROOT / "results" / "tables.md").write_text(text, encoding="utf8")
+    written = ["results/results.json", "results/tables.md"]
     for path, tag, block in (("README.md", "summary", summary_table(res)), ("docs/results.md", "results", text)):
         if (ROOT / path).exists():
             replace_block(ROOT / path, tag, block)
+            written.append(path)
     payload = json.dumps({**res, "vectors": vectors, "headline": headline(res), "tables": text}, separators=(",", ":")).replace("</", "<\\/")
     page = ROOT / "web" / "index.html"
     s = page.read_text(encoding="utf8")
     page.write_text(re.sub(r'(<script id="data" type="application/json">).*?(</script>)', lambda m: m.group(1) + payload + m.group(2), s, flags=re.S), encoding="utf8")
+    return written + ["web/index.html"]

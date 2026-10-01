@@ -53,7 +53,7 @@ def bag(id_lists, V, drop=0.0, rng=None):
     rows, cols, vals = [], [], []
     for r, ids in enumerate(id_lists):
         if drop and len(ids) > 1:
-            ids = ids[rng.random(len(ids)) >= drop]  # ponytail: a text can lose every word; then its row stays zero
+            ids = ids[rng.random(len(ids)) >= drop]  # a text can lose every word; then its row stays zero
         rows.append(np.full(len(ids), r)), cols.append(ids), vals.append(np.full(len(ids), 1.0 / max(len(ids), 1)))
     return coo_matrix((np.concatenate(vals), (np.concatenate(rows), np.concatenate(cols))), shape=(len(id_lists), V)).tocsr()
 

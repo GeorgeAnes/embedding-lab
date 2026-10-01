@@ -14,8 +14,8 @@ def main():
     if args.cmd == "eval":
         from . import evaluate, report
         results, vectors = evaluate.run(args.real, not args.skip_squad)
-        report.write_all(results, vectors)
-        print(report.headline(results), f"\nWrote results/results.json, results/tables.md, web/index.html and the tables in README.md and docs/results.md ({results['meta']['wall_seconds']} s).")
+        written = report.write_all(results, vectors)
+        print(report.headline(results), f"\nWrote {', '.join(written)} ({results['meta']['wall_seconds']} s).")
     elif args.cmd == "corpus":
         from . import corpus
         corpus.write()
