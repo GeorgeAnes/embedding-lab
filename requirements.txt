@@ -1,2 +1,3 @@
 numpy==2.4.6
 scipy==1.17.1
+wordllama==0.4.0.post1

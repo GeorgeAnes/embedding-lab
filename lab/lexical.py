@@ -1,4 +1,4 @@
-"""Lexical baselines on one text collection: TF-IDF as in the auditor, and BM25.
+"""Lexical baselines on one text collection: TF-IDF as in the auditor, BM25, LSA-64 (SVD of the TF-IDF matrix).
 
 Every method reads the same token counts (text.tokens). Scores come back as a dense (queries x docs) array.
 """
@@ -14,6 +14,10 @@ def rowsum(M):
     return np.asarray(M.sum(1)).ravel()
 
 
+def unit(M):
+    return M / np.maximum(np.linalg.norm(M, axis=1, keepdims=True), 1e-12)
+
+
 class Index:
     def __init__(self, texts):
         counts = [Counter(tokens(t)) for t in texts]
@@ -22,6 +26,7 @@ class Index:
         self.tf = self._matrix(counts)
         self.df = np.bincount(self.tf.indices, minlength=V)
         self.dl = rowsum(self.tf)  # document length in tokens
+        self._lsa = {}
 
     def _matrix(self, counts):
         rows, cols, vals = [], [], []
@@ -59,3 +64,29 @@ class Index:
         norm = k1 * (1 - b + b * self.dl[tf.row] / self.dl.mean())
         W = csr_matrix((idf[tf.col] * tf.data * (k1 + 1) / (tf.data + norm), (tf.row, tf.col)), shape=self.tf.shape)
         return (self.query_counts(queries)[0] @ W.T).toarray()
+
+    # --- LSA: keep the 64 strongest directions of the TF-IDF matrix -----------------------------------------
+    def _lsa_basis(self, k):
+        if k not in self._lsa:
+            A, _ = self._tfidf_docs()
+            # ponytail: assumes the collection has more than k independent documents (true for both collections here)
+            vals, U = np.linalg.eigh((A @ A.T).toarray())  # A = U S Vt, so A A^T = U S^2 U^T
+            vals, U = vals[::-1][:k], U[:, ::-1][:, :k]
+            Vk = A.T @ (U / np.sqrt(np.maximum(vals, 1e-12)))  # the k word-space directions
+            self._lsa[k] = (Vk, A @ Vk)
+        return self._lsa[k]
+
+    def lsa_docs(self, k=64):
+        """Document vectors before and after scaling to length 1 (u = the row of U S)."""
+        u = self._lsa_basis(k)[1]
+        return u, unit(u)
+
+    def lsa_queries(self, queries, k=64):
+        """Fold queries into the same space: TF-IDF weights times the word-space directions."""
+        Q, _ = self.query_counts(queries)
+        idf = np.log((self.N + 1) / (self.df + 1)) + 1.0
+        u = np.asarray(Q.multiply(idf).tocsr() @ self._lsa_basis(k)[0])
+        return u, unit(u)
+
+    def lsa(self, queries, k=64):
+        return self.lsa_queries(queries, k)[1] @ self.lsa_docs(k)[1].T
