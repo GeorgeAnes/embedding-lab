@@ -17,8 +17,7 @@
 
 ## Not validated
 
-- The Dockerfile: `docker build` was not run (no Docker daemon was available on the machine I used). I checked that every `COPY` source exists and is not excluded by `.dockerignore`, and I ran its install line and its `CMD` in a fresh virtual environment. As far as PyPI shows, WordLlama 0.4.0.post1 has Linux wheels only for x86-64, so a build on an arm64 host (Docker Desktop on Apple silicon, for example) would have to compile it from source, which I did not try.
-- The GitHub Actions workflow: it has not run on GitHub. I ran each of its steps in a fresh virtual environment on Linux with Python 3.11, installing only from the requirements files, and every step passed. No Pages deployment exists.
+- The Docker image: CI builds it and does not run it. As far as PyPI shows, WordLlama 0.4.0.post1 has Linux wheels only for x86-64, so a build on an arm64 host (Docker Desktop on Apple silicon, for example) would have to compile it from source, which I did not try.
 - The PowerShell commands, Windows, and Python versions other than 3.11. On Windows the training processes start with `spawn`; that path was not run.
 - The real-model row: no LM Studio or Azure OpenAI in Foundry Models endpoint was called. Only the local stub test covers the client.
 - The Azure mapping in [azure-mapping.md](azure-mapping.md): nothing was run against Azure AI Search or Microsoft Foundry.

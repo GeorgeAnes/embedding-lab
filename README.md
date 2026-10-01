@@ -79,7 +79,7 @@ embedding-lab/
   web/index.html     One static page with no external assets: results chart, all tables, a per-query inspector
   docs/              Method, results, running, limitations, Azure mapping
   Dockerfile         Runs python -m lab eval in a container
-  .github/workflows/ci.yml   Runs the tests and python -m lab eval
+  .github/workflows/ci.yml   Runs the tests and python -m lab eval, and builds the image
 ```
 
 Technologies: Python 3.11, NumPy, SciPy, WordLlama (static vectors), pytest and Playwright (browser test).
@@ -119,7 +119,7 @@ The benchmark is 1,714 documents and 99 queries in 33 target groups. A query cou
 - The model trains on the documents it searches. The leak audit flagged 32 of the 99 queries (none in the low tier, 4 in mid, 28 in high) and I did not remove them. A run that leaves the 74 target documents out of training scores the same within noise, on one seed.
 - The encoder is a bag of word vectors. It ignores word order and drops every word outside its 6,709-word vocabulary, and it trained on about 1,700 pairs. No transformer, hard negatives or larger training set was tried, so the result says nothing about embedding models in general.
 - The intervals resample 33 target groups with the percentile method. They are approximate and probably somewhat narrow, and the per-tier intervals are wide (the low tier has 37 queries).
-- Not validated: the Dockerfile (`docker build` was not run, no Docker daemon was available), the GitHub Actions workflow (not run on GitHub; I ran each of its steps in a fresh virtual environment), PowerShell and Windows, Python versions other than 3.11, the real-model row against a real endpoint, the [Azure mapping](docs/azure-mapping.md), and rebuilding the corpus on other NumPy or SciPy versions.
+- Not validated: running the Docker image (CI builds it and does not run it), PowerShell and Windows (CI runs on Ubuntu), Python versions other than 3.11, the real-model row against a real endpoint, the [Azure mapping](docs/azure-mapping.md), and rebuilding the corpus on other NumPy or SciPy versions.
 
 The full list is in [docs/limitations.md](docs/limitations.md).
 

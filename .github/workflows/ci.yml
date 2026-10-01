@@ -20,3 +20,8 @@ jobs:
         with:
           name: results
           path: results/
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t embedding-lab .
