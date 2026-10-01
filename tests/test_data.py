@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from lab import evaluate
+from lab import evaluate, report
 from lab.text import TIERS, containment, tier, trigrams
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -71,6 +71,12 @@ def test_reported_results_belong_to_the_committed_data():
     path = ROOT / "results" / "results.json"
     if not path.exists():
         pytest.skip("run python -m lab eval first")
-    meta = json.loads(path.read_text())["meta"]
+    res = json.loads(path.read_text())
+    meta = res["meta"]
     assert meta["queries_sha256"] == sha256((ROOT / "data" / "queries.json").read_bytes()).hexdigest()
     assert meta["corpus_sha256"] == sha256((ROOT / "data" / "corpus.jsonl").read_bytes()).hexdigest()
+    readme = (ROOT / "README.md").read_text(encoding="utf8")
+    assert meta["queries_sha256"] in (ROOT / "docs" / "method.md").read_text(encoding="utf8")
+    assert report.headline(res) in readme, "the README's result sentence must match results.json"
+    assert report.summary_table(res) in readme, "the README table is stale: run python -m lab eval"
+    assert (ROOT / "results" / "tables.md").read_text(encoding="utf8").strip() in (ROOT / "docs" / "results.md").read_text(encoding="utf8"), "docs/results.md is stale: run python -m lab eval"

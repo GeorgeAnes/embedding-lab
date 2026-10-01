@@ -1,4 +1,4 @@
-"""Turn results into Markdown tables and embed them, with the per-query data, in web/index.html."""
+"""Turn results into Markdown tables for README.md and docs/results.md, and embed them, with the per-query data, in web/index.html."""
 import json
 import re
 from pathlib import Path
@@ -106,6 +106,15 @@ def ablation_tables(res):
     return out
 
 
+def summary_table(res):
+    """The README's results table: all queries with intervals, and recall@10 without the queries that repeat a summary line."""
+    methods, qs = res["docstrings"]["methods"], res["queries"]
+    rest = [q for q in qs if not q["verbatim"]]
+    hit = lambda k: sum(q["rank"][k] <= 10 for q in rest) / len(rest)
+    return md(["Method", "recall@10", "MRR@10", f"recall@10 without the {len(qs) - len(rest)} summary-line queries"],
+              [[res["labels"][k], ci(methods[k]["all"]["r10"]), ci(methods[k]["all"]["mrr"]), f"{hit(k):.2f}"] for k in ORDER if k in methods])
+
+
 def tables(res):
     m, meta = res["docstrings"], res["meta"]
     out = f"{headline(res)}\n\nDocstring benchmark: {meta['n_docs']} documents, {meta['n_queries']} queries in {max(q['group'] for q in res['queries']) + 1} target groups.\n"
@@ -121,11 +130,20 @@ def tables(res):
     return out
 
 
+def replace_block(path, tag, text):
+    s = Path(path).read_text(encoding="utf8")
+    new = re.sub(rf"(<!-- {tag}:start -->).*?(<!-- {tag}:end -->)", lambda m: f"{m.group(1)}\n{text}\n{m.group(2)}", s, flags=re.S)
+    Path(path).write_text(new, encoding="utf8")
+
+
 def write_all(res, vectors):
     (ROOT / "results").mkdir(exist_ok=True)
     (ROOT / "results" / "results.json").write_text(json.dumps(res, indent=1), encoding="utf8")
     text = tables(res)
     (ROOT / "results" / "tables.md").write_text(text, encoding="utf8")
+    for path, tag, block in (("README.md", "summary", summary_table(res)), ("docs/results.md", "results", text)):
+        if (ROOT / path).exists():
+            replace_block(ROOT / path, tag, block)
     payload = json.dumps({**res, "vectors": vectors, "headline": headline(res), "tables": text}, separators=(",", ":")).replace("</", "<\\/")
     page = ROOT / "web" / "index.html"
     s = page.read_text(encoding="utf8")
