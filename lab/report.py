@@ -1,5 +1,6 @@
-"""Turn results into Markdown tables and write them, with the raw results, to results/."""
+"""Turn results into Markdown tables and embed them, with the per-query data, in web/index.html."""
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -125,3 +126,7 @@ def write_all(res, vectors):
     (ROOT / "results" / "results.json").write_text(json.dumps(res, indent=1), encoding="utf8")
     text = tables(res)
     (ROOT / "results" / "tables.md").write_text(text, encoding="utf8")
+    payload = json.dumps({**res, "vectors": vectors, "headline": headline(res), "tables": text}, separators=(",", ":")).replace("</", "<\\/")
+    page = ROOT / "web" / "index.html"
+    s = page.read_text(encoding="utf8")
+    page.write_text(re.sub(r'(<script id="data" type="application/json">).*?(</script>)', lambda m: m.group(1) + payload + m.group(2), s, flags=re.S), encoding="utf8")
