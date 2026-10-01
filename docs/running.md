@@ -10,8 +10,8 @@ python -m lab corpus
 python -m lab fetch-squad
 ```
 
-- `eval` trains the models, evaluates every method and writes `results/results.json`, `results/tables.md`, the data block of `web/index.html`, the table in `README.md` and the block in `docs/results.md`.
-- `eval` downloads SQuAD v1.1 dev (about 4.8 MB) from GitHub into `data/squad/` on first use. That folder is git-ignored and the file is never committed. `--skip-squad` skips the SQuAD check, and `fetch-squad` only downloads the file.
+- `eval` trains the models, evaluates every method and writes `results/results.json`, `results/tables.md`, the data block of `web/index.html` and, when the files exist, the table in `README.md` and the block in `docs/results.md`. All of these are tracked files, so a run changes them: the date and the timings differ every time, the metrics do not.
+- `eval` downloads SQuAD v1.1 dev (about 4.9 MB) from GitHub into `data/squad/` on first use. That folder is git-ignored and the file is never committed. `--skip-squad` skips the SQuAD check, and `fetch-squad` only downloads the file. The files are rewritten without the check: `results/results.json` and `web/index.html` hold no SQuAD data, and `docs/results.md` and `results/tables.md` lose their SQuAD tables. `git checkout -- results web docs README.md` restores the committed versions. The same happens if the download fails.
 - `corpus` rebuilds `data/corpus.jsonl` from the installed NumPy and SciPy. Other versions give a different corpus and different numbers (see "Corpus" in [method.md](method.md)).
 - The browser test needs Chromium (`python -m playwright install chromium`). Without it the test is skipped.
 

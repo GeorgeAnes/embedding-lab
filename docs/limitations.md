@@ -2,7 +2,7 @@
 
 ## Limits of the data and the setup
 
-- 99 queries in 33 target groups, written by one author, who also chose the acceptable targets. Per-tier intervals are wide, and the low tier has 37 queries. Some queries repeat an earlier draft's queries or a target's own summary line (see "Query set" in [method.md](method.md)); removing the 6 summary-line queries lowers every method's overall recall@10 by 0.02 to 0.04 and does not change their order.
+- 99 queries in 33 target groups, written by one author, who also chose the acceptable targets. Per-tier intervals are wide, and the low tier has 37 queries. Some queries repeat an earlier draft's queries or a target's own summary line (see "Query set" in [method.md](method.md)); removing the 6 summary-line queries lowers the overall recall@10 of every method except random by 0.02 to 0.04 and does not change their order.
 - The acceptable target sets are judgment calls. A different judge would change some ranks. Some groups accept up to five functions (for example the bracketing root finders), which makes those queries easier for every method.
 - The intervals come from resampling 33 target groups (fewer within a tier) and use the percentile method. They are approximate and probably somewhat narrow.
 - The encoder ignores word order and context, and drops every word outside its vocabulary, which is the 6,709 words that occur in at least two documents.

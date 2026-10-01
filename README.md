@@ -56,7 +56,7 @@ python -m lab eval
 
 Then open `web/index.html` in a browser (no server needed).
 
-`pytest` runs 20 tests in a few seconds, including the gradient check and a browser test of the page. The browser test needs Chromium (`python -m playwright install chromium`) and is skipped without it. `python -m lab eval` trains the models, evaluates every method and rewrites `results/`, `web/index.html`, the table above and the tables in `docs/results.md`. It takes about three minutes on two cores. On first use it downloads SQuAD v1.1 dev (about 4.8 MB) from GitHub into `data/squad/`, which is git-ignored; `--skip-squad` skips that check. Timings, the options of `python -m lab` and the row for a real embedding model are in [docs/running.md](docs/running.md).
+`pytest` runs 20 tests in a few seconds, including the gradient check and a browser test of the page. The browser test needs Chromium (`python -m playwright install chromium`) and is skipped without it. `python -m lab eval` trains the models, evaluates every method and rewrites `results/`, `web/index.html`, the table above and the tables in `docs/results.md`. It takes about three minutes on two cores. On first use it downloads SQuAD v1.1 dev (about 4.9 MB) from GitHub into `data/squad/`, which is git-ignored; `--skip-squad` skips that check. Timings, the options of `python -m lab` and the row for a real embedding model are in [docs/running.md](docs/running.md).
 
 ## Repository Structure
 
@@ -81,8 +81,6 @@ embedding-lab/
   Dockerfile         Runs python -m lab eval in a container
   .github/workflows/ci.yml   Runs the tests and python -m lab eval, and builds the image
 ```
-
-Technologies: Python 3.11, NumPy, SciPy, WordLlama (static vectors), pytest and Playwright (browser test).
 
 ## Method in Brief
 
@@ -114,8 +112,8 @@ The benchmark is 1,714 documents and 99 queries in 33 target groups. A query cou
 ## Limitations
 
 - The query set is small: 99 queries in 33 target groups, written by one author, who also chose the acceptable targets. No second person checked them.
-- 6 of the 99 queries are word for word the summary line of one of their targets, and the model trained on that exact text. That is why the headline gives the numbers without them (0.41 against 0.67). Removing them lowers every method's overall recall@10 by 0.02 to 0.04 and does not change the order of the methods.
-- 11 queries repeat a query from an earlier draft of the query list, which is not in this repository. On the 86 queries left after removing both sets, BM25 on full text has recall@10 0.65 and own-64 0.37 (a one-off calculation, not part of `python -m lab eval`). The order is again unchanged.
+- 6 of the 99 queries are word for word the summary line of one of their targets, and the model trained on that exact text. That is why the headline gives the numbers without them (0.41 against 0.67). Removing them lowers the overall recall@10 of every method except random by 0.02 to 0.04 and does not change the order of the methods.
+- 11 queries repeat a query from an earlier draft of the query list. The draft is not in this repository; the 11 queries are listed in [docs/method.md](docs/method.md). On the 86 queries left after removing both sets, BM25 on full text has recall@10 0.65 and own-64 0.37, and the order of the methods by recall@10 is again unchanged. This is not part of `python -m lab eval`; a one-line command in [docs/method.md](docs/method.md) repeats it from `results/results.json`.
 - The model trains on the documents it searches. The leak audit flagged 32 of the 99 queries (none in the low tier, 4 in mid, 28 in high) and I did not remove them. A run that leaves the 74 target documents out of training scores the same within noise, on one seed.
 - The encoder is a bag of word vectors. It ignores word order and drops every word outside its 6,709-word vocabulary, and it trained on about 1,700 pairs. No transformer, hard negatives or larger training set was tried, so the result says nothing about embedding models in general.
 - The intervals resample 33 target groups with the percentile method. They are approximate and probably somewhat narrow, and the per-tier intervals are wide (the low tier has 37 queries).
