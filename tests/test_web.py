@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 
 import numpy as np
@@ -28,7 +27,7 @@ def test_page_in_a_browser(tmp_path):
     d = payload()
     if not d:
         pytest.skip("run python -m lab eval first")
-    shots = Path(os.environ.get("LAB_SCREENSHOTS", tmp_path))
+    shots = tmp_path
     with sync_api.sync_playwright() as p:
         try:
             browser = p.chromium.launch()

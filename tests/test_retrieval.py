@@ -68,3 +68,16 @@ def test_summarize_metrics_and_paired_difference():
     assert abs(out["a"]["all"]["mrr"][0] - (1 + 0.5 + 0 + 0.2) / 4) < 1e-12
     assert out["b"]["all"]["d_r10"] == [0.0, 0.0, 0.0]
     assert out["c"]["all"]["r10"][0] == 1.0 and out["c"]["all"]["d_r10"][0] == 0.25
+
+
+def test_summarize_interval_bounds_match_a_plain_loop():
+    best = {"a": np.array([1, 2, 20, 5]), "c": np.array([3, 3, 3, 3])}
+    out = summarize(best, np.array([0, 0, 0, 1]), "a", {"all": np.ones(4, bool)}, B=200)
+    draws = np.random.default_rng(0).integers(0, 2, (200, 2))  # the resamples of 2 groups that summarize draws (seed 0)
+    members = [[0, 1, 2], [3]]  # unequal groups: a resample's mean is over its queries, not over its groups
+
+    def boot(r):
+        hit = [float(x <= 10) for x in r]
+        return np.array([np.mean([hit[i] for g in d for i in members[g]]) for d in draws])
+    lo_hi = lambda x: np.percentile(x, [2.5, 97.5]).tolist()
+    assert np.allclose(out["a"]["all"]["r10"][1:] + out["c"]["all"]["d_r10"][1:], lo_hi(boot(best["a"])) + lo_hi(boot(best["c"]) - boot(best["a"])))

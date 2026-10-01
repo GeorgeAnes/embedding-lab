@@ -56,7 +56,7 @@ python -m lab eval
 
 Then open `web/index.html` in a browser (no server needed).
 
-`pytest` runs 20 tests in a few seconds, including the gradient check and a browser test of the page. The browser test needs Chromium (`python -m playwright install chromium`) and is skipped without it. `python -m lab eval` trains the models, evaluates every method and rewrites `results/`, `web/index.html`, the table above and the tables in `docs/results.md`. It takes about three minutes on two cores. On first use it downloads SQuAD v1.1 dev (about 4.9 MB) from GitHub into `data/squad/`, which is git-ignored; `--skip-squad` skips that check. Timings, the options of `python -m lab` and the row for a real embedding model are in [docs/running.md](docs/running.md).
+`pytest` runs 21 tests in a few seconds, including the gradient check and a browser test of the page. The browser test needs Chromium (`python -m playwright install chromium`) and is skipped without it. `python -m lab eval` trains the models, evaluates every method and rewrites `results/`, `web/index.html`, the table above and the tables in `docs/results.md`. It takes about three minutes on two cores. On first use it downloads SQuAD v1.1 dev (about 4.9 MB) from GitHub into `data/squad/`, which is git-ignored; `--skip-squad` skips that check. Timings, the options of `python -m lab` and the row for a real embedding model are in [docs/running.md](docs/running.md).
 
 ## Repository Structure
 

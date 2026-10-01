@@ -17,7 +17,7 @@ python -m lab fetch-squad
 
 ## Timings
 
-Measured on a 2-core Linux VM (30 September 2026): `pip install -r requirements-dev.txt` into a new venv 21 s; `python -m pytest -q` 5 to 6 s (20 tests); `python -m lab eval` 145 to 188 s in full runs with nothing else running (261 s once, with other jobs running; 179.3 s is the run recorded in `results/results.json`; the spread is unexplained). One training run takes 15 to 41 s (the untrained model takes no time), and the seven trainings run in a pool with one worker per core, so two at a time here, followed by one SQuAD training of 21 to 25 s. The metrics were identical across all runs; only the timings differ.
+Measured on a 2-core Linux VM (30 September 2026): `pip install -r requirements-dev.txt` into a new venv 21 s; `python -m pytest -q` 5 to 6 s (21 tests); `python -m lab eval` 145 to 188 s in full runs with nothing else running (261 s once, with other jobs running; 179.3 s is the run recorded in `results/results.json`; the spread is unexplained). One training run takes 15 to 41 s (the untrained model takes no time), and the seven trainings run in a pool with one worker per core, so two at a time here, followed by one SQuAD training of 21 to 25 s. The metrics were identical across all runs; only the timings differ.
 
 Training runs execute in parallel worker processes with one BLAS thread each (`lab/__init__.py`, `lab/evaluate.py`). With the default multi-threaded BLAS the same training was 2 to 3 times slower on that VM.
 
