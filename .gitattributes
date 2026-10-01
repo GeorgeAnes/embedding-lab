@@ -1,3 +1,2 @@
 data/* -text
 results/* -text
-*.sh text eol=lf
